@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Examples - Refactoring to Composition Over Inheritance</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #282c34;
+            color: #abb2bf;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 2rem;
+        }
+        .ascii-art {
+            font-size: 0.8rem;
+            color: #56b6c2;
+            text-align: center;
+            margin: 1rem 0;
+        }
+        a {
+            color: #61afef;
+            text-decoration: none;
+        }
+        a:hover {
+            color: #98c379;
+        }
+        .section {
+            margin-bottom: 2rem;
+        }
+        .code-block {
+            background: #1e222a;
+            padding: 1rem;
+            border-radius: 5px;
+            color: #abb2bf;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="section">
+        <h1 class="text-3xl font-bold">Code Examples: From Inheritance to Composition</h1>
+        <p>
+            In this section, we’ll explore detailed examples to demonstrate the practical benefits of refactoring from inheritance
+            to composition. These examples highlight the flexibility and modularity that composition brings to your code.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2 class="text-2xl font-bold">Example 2: Employee Bonus System</h2>
+        <p>
+            Many systems calculate bonuses differently based on roles. Let’s see how we can refactor such a system to
+            leverage composition effectively.
+        </p>
+
+        <h3 class="text-xl font-bold">Inheritance-Based Implementation</h3>
+        <pre class="code-block">
+<span class="keyword">class</span> <span class="class-name">Employee</span>
+  <span class="keyword">def</span> <span class="function-name">initialize</span>(name)
+    @name = name
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function-name">bonus</span>
+    1000
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">class</span> <span class="class-name">Manager</span> < <span class="class-name">Employee</span>
+  <span class="keyword">def</span> <span class="function-name">bonus</span>
+    <span class="keyword">super</span> + 2000
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">class</span> <span class="class-name">Developer</span> < <span class="class-name">Employee</span>
+  <span class="keyword">def</span> <span class="function-name">bonus</span>
+    <span class="keyword">super</span> + 1500
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+        </pre>
+
+        <p>
+            While this implementation works, it tightly couples bonus logic to employee roles and creates duplication in
+            subclasses. Adding new roles requires additional subclasses and modifications to existing code.
+        </p>
+
+        <h3 class="text-xl font-bold">Refactored to Composition</h3>
+        <pre class="code-block">
+<span class="keyword">class</span> <span class="class-name">Bonus</span>
+  <span class="keyword">def</span> <span class="function-name">initialize</span>(base_bonus:, additional_bonus:)
+    @base_bonus = base_bonus
+    @additional_bonus = additional_bonus
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function-name">calculate</span>
+    @base_bonus + @additional_bonus
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+manager_bonus = <span class="class-name">Bonus</span>.<span class="function-name">new</span>(base_bonus: 1000, additional_bonus: 2000)
+developer_bonus = <span class="class-name">Bonus</span>.<span class="function-name">new</span>(base_bonus: 1000, additional_bonus: 1500)
+
+<span class="keyword">puts</span> manager_bonus.<span class="function-name">calculate</span> # Outputs 3000
+<span class="keyword">puts</span> developer_bonus.<span class="function-name">calculate</span> # Outputs 2500
+        </pre>
+
+        <p>
+            This approach encapsulates bonus logic into a reusable `Bonus` class. Employee roles no longer need to define
+            their own bonus logic, making the system more flexible and scalable.
+        </p>
+        <a href="advanced-code-examples.html">Continue to Advanced Code Examples →</a>
+    </div>

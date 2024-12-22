@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introduction - Refactoring to Composition Over Inheritance</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #282c34;
+            color: #abb2bf;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 2rem;
+        }
+        .ascii-art {
+            font-size: 0.8rem;
+            color: #56b6c2;
+            text-align: center;
+            margin: 1rem 0;
+        }
+        a {
+            color: #61afef;
+            text-decoration: none;
+        }
+        a:hover {
+            color: #98c379;
+        }
+        .section {
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="section">
+        <h1 class="text-3xl font-bold">Introduction</h1>
+        <p>
+            Inheritance is a fundamental principle in object-oriented programming, providing a way to share behavior and structure
+            across related classes. However, while inheritance can be powerful, it often comes with hidden costs.
+            When overused or misapplied, it can lead to tightly coupled systems, rigid hierarchies, and fragile designs.
+        </p>
+        <div class="ascii-art">
+<pre>
+    _______ _______ _______ _______
+   |       |       |       |       |
+   | MOD   |  FLEX | TEST  | MAINT |
+   |_______|_______|_______|_______|
+</pre>
+        </div>
+        <p>
+            In this guide, we will explore how refactoring to composition can address these challenges, enabling you to:
+        </p>
+        <ul>
+            <li>Build systems that are easier to understand and maintain.</li>
+            <li>Encourage reuse through modular components.</li>
+            <li>Adapt to new requirements without breaking existing functionality.</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2 class="text-2xl font-bold">Why Inheritance Often Fails</h2>
+        <p>
+            While inheritance is commonly taught as the go-to solution for sharing behavior, it is not without its downsides.
+            Here are some of the key issues:
+        </p>
+        <ul>
+            <li>
+                <strong>Tight Coupling:</strong> Subclasses are often tightly coupled to their parent classes, making it
+                difficult to change one without affecting the other.
+            </li>
+            <li>
+                <strong>Rigidity:</strong> Adding new functionality often requires modifying existing classes, which can
+                introduce bugs and make the system less predictable.
+            </li>
+            <li>
+                <strong>Duplication:</strong> Despite inheritance, similar behaviors often need to be reimplemented in
+                multiple subclasses.
+            </li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2 class="text-2xl font-bold">The Power of Composition</h2>
+        <p>
+            Composition, in contrast, offers a more flexible and modular approach to sharing behavior. By building systems
+            out of smaller, reusable components, we can:
+        </p>
+        <ul>
+            <li>Decouple behaviors, making them easier to test and modify.</li>
+            <li>Encourage reuse across unrelated parts of the system.</li>
+            <li>Align more closely with the Single Responsibility Principle, ensuring each class has a clear purpose.</li>
+        </ul>
+        <div class="ascii-art">
+<pre>
+    Modular Components:
+       ┌───────────┐   ┌───────────┐
+       │ Component │   │ Component │
+       │───────────│ + │───────────│
+       │   Part    │   │   Part    │
+       └───────────┘   └───────────┘
+</pre>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2 class="text-2xl font-bold">A Roadmap for Refactoring</h2>
+        <p>
+            Refactoring to composition involves breaking down complex classes into smaller, more focused components. Here’s
+            how we’ll approach it:
+        </p>
+        <ol>
+            <li><strong>Identify Shared Behavior:</strong> Look for methods or properties that are duplicated across subclasses.</li>
+            <li><strong>Extract Components:</strong> Move shared functionality into standalone objects.</li>
+            <li><strong>Integrate Components:</strong> Replace inheritance with delegation, using composition to assemble behavior.</li>
+            <li><strong>Test:</strong> Ensure that the refactored system behaves as expected, with comprehensive test coverage.</li>
+        </ol>
+    </div>
+
+    <div class="section">
+        <h2 class="text-2xl font-bold">The Journey Ahead</h2>
+        <p>
+            In the following sections, we will delve deeper into the challenges posed by inheritance, demonstrate how to
+            refactor real-world examples to use composition, and explore the benefits this approach offers. By the end
+            of this guide, you’ll be equipped with the tools and knowledge to make your code more modular, flexible, and
+            maintainable.
+        </p>
+        <a href="problem.html">Continue to the Problem Section →</a>
+    </div>
+</body>
+</html>
+

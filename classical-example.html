@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Bicycle Example: Classical Inheritance</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #282c34;
+            color: #abb2bf;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 2rem;
+        }
+        .section {
+            margin-bottom: 2rem;
+        }
+        .code-block {
+            background: #1e222a;
+            padding: 1rem;
+            border-radius: 5px;
+            color: #abb2bf;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            overflow-x: auto;
+        }
+        a {
+            color: #61afef;
+            text-decoration: none;
+        }
+        a:hover {
+            color: #98c379;
+        }
+    </style>
+</head>
+<body>
+    <div class="section">
+        <h1 class="text-3xl font-bold">Complete Bicycle Example: Classical Inheritance</h1>
+        <p>
+            This example showcases a complete implementation of a Bicycle system using classical inheritance. It helps us
+            understand the limitations of this approach, setting the stage for the transition to composition.
+        </p>
+        <p><strong>Note:</strong> This example is inspired by Sandi Metz's work in <em>Practical Object-Oriented Design in Ruby</em> (POODR).</p>
+    </div>
+
+    <div class="section">
+        <h2 class="text-2xl font-bold">Classical Inheritance Implementation</h2>
+        <pre class="code-block">
+<span class="keyword">class</span> <span class="class-name">Bicycle</span>
+  <span class="keyword">def</span> <span class="function-name">initialize</span>(args = {})
+    @size = args[:size]
+    @chain = args[:chain] || default_chain
+    @tire_size = args[:tire_size] || default_tire_size
+    post_initialize(args)
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function-name">spares</span>
+    { tire_size: @tire_size, chain: @chain }.merge(local_spares)
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function-name">default_tire_size</span>
+    <span class="keyword">raise</span> NotImplementedError, "This #{self.class} cannot respond to: default_tire_size"
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function-name">default_chain</span>
+    "10-speed"
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function-name">post_initialize</span>(args)
+    <span class="keyword">nil</span>
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function-name">local_spares</span>
+    {}
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">class</span> <span class="class-name">RoadBike</span> < <span class="class-name">Bicycle</span>
+  <span class="keyword">def</span> <span class="function-name">post_initialize</span>(args)
+    @tape_color = args[:tape_color]
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function-name">local_spares</span>
+    { tape_color: @tape_color }
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function-name">default_tire_size</span>
+    "23"
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">class</span> <span class="class-name">MountainBike</span> < <span class="class-name">Bicycle</span>
+  <span class="keyword">def</span> <span class="function-name">post_initialize</span>(args)
+    @front_shock = args[:front_shock]
+    @rear_shock = args[:rear_shock]
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function-name">local_spares</span>
+    { front_shock: @front_shock }
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function-name">default_tire_size</span>
+    "2.1"
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">class</span> <span class="class-name">RecumbentBike</span> < <span class="class-name">Bicycle</span>
+  <span class="keyword">def</span> <span class="function-name">post_initialize</span>(args)
+    @flag = args[:flag]
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function-name">local_spares</span>
+    { flag: @flag }
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function-name">default_chain</span>
+    "9-speed"
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function-name">default_tire_size</span>
+    "28"
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+road_bike = <span class="class-name">RoadBike</span>.<span class="function-name">new</span>(size: "M", tape_color: "red")
+mountain_bike = <span class="class-name">MountainBike</span>.<span class="function-name">new</span>(size: "L", front_shock: "Manitou", rear_shock: "Fox")
+recumbent_bike = <span class="class-name">RecumbentBike</span>.<span class="function-name">new</span>(size: "S", flag: "Tall")
+
+<span class="keyword">puts</span> road_bike.<span class="function-name">spares</span>
+<span class="keyword">puts</span> mountain_bike.<span class="function-name">spares</span>
+<span class="keyword">puts</span> recumbent_bike.<span class="function-name">spares</span>
+        </pre>
+
+        <p>
+            This implementation demonstrates the rigid structure of inheritance. While functional, it often leads to
+            duplication, tight coupling, and difficulty in extending behavior. In the next section, we’ll explore how
+            composition can address these challenges.
+        </p>
+        <a href="solution.html">Continue to Benefits of Composition →</a>
+    </div>
+</body>
+</html>
+

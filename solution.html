@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solution - Refactoring to Composition Over Inheritance</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #282c34;
+            color: #abb2bf;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 2rem;
+        }
+        .ascii-art {
+            font-size: 0.8rem;
+            color: #56b6c2;
+            text-align: center;
+            margin: 1rem 0;
+        }
+        a {
+            color: #61afef;
+            text-decoration: none;
+        }
+        a:hover {
+            color: #98c379;
+        }
+        .section {
+            margin-bottom: 2rem;
+        }
+        .code-block {
+            background: #1e222a;
+            padding: 1rem;
+            border-radius: 5px;
+            color: #abb2bf;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="section">
+        <h1 class="text-3xl font-bold">Solution: Complete Refactor to Composition</h1>
+        <p>
+            Continuing from the classical inheritance example, we now take the Bicycle system refactor to its final state using
+            composition as described in <em>Practical Object-Oriented Design in Ruby (POODR)</em> by Sandi Metz. This final implementation
+            demonstrates a fully modular and flexible design, leveraging composition effectively.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2 class="text-2xl font-bold">Final Refactored Implementation</h2>
+        <p>
+            In this final state, the system is fully refactored to encapsulate parts into modular, reusable objects, and define
+            part-specific configurations dynamically. This approach eliminates the rigidity of inheritance hierarchies.
+        </p>
+
+        <h3 class="text-xl font-bold">Step 1: `Parts` and `Part` Classes</h3>
+        <pre class="code-block">
+<span class="keyword">class</span> <span class="class-name">Part</span>
+  <span class="keyword">attr_reader</span> :name, :required
+
+  <span class="keyword">def</span> <span class="function-name">initialize</span>(name:, required:)
+    @name = name
+    @required = required
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function-name">required?</span>
+    @required
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">class</span> <span class="class-name">Parts</span>
+  <span class="keyword">attr_reader</span> :parts
+
+  <span class="keyword">def</span> <span class="function-name">initialize</span>(parts)
+    @parts = parts
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function-name">spares</span>
+    @parts.select(&:required?)
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function-name">size</span>
+    @parts.size
+  <span class="keyword">end</span>
+
+  <span class="keyword">include</span> <span class="keyword">Enumerable</span>
+
+  <span class="keyword">def</span> <span class="function-name">each</span>(&block)
+    @parts.each(&block)
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+        </pre>
+
+        <p>
+            The `Part` class represents individual components, while the `Parts` collection manages these components, providing
+            behaviors like iteration and spare parts filtering.
+        </p>
+
+        <h3 class="text-xl font-bold">Step 2: Configuring Specific Parts</h3>
+        <pre class="code-block">
+road_bike_parts_config = [
+  <span class="class-name">Part</span>.<span class="function-name">new</span>(name: "chain", required: <span class="keyword">true</span>),
+  <span class="class-name">Part</span>.<span class="function-name">new</span>(name: "tire_size", required: <span class="keyword">true</span>),
+  <span class="class-name">Part</span>.<span class="function-name">new</span>(name: "tape_color", required: <span class="keyword">true</span>)
+]
+
+mountain_bike_parts_config = [
+  <span class="class-name">Part</span>.<span class="function-name">new</span>(name: "chain", required: <span class="keyword">true</span>),
+  <span class="class-name">Part</span>.<span class="function-name">new</span>(name: "tire_size", required: <span class="keyword">true</span>),
+  <span class="class-name">Part</span>.<span class="function-name">new</span>(name: "front_shock", required: <span class="keyword">true</span>),
+  <span class="class-name">Part</span>.<span class="function-name">new</span>(name: "rear_shock", required: <span class="keyword">false</span>)
+]
+
+road_bike_parts = <span class="class-name">Parts</span>.<span class="function-name">new</span>(road_bike_parts_config)
+mountain_bike_parts = <span class="class-name">Parts</span>.<span class="function-name">new</span>(mountain_bike_parts_config)
+        </pre>
+
+        <p>
+            These configurations encapsulate all part-specific details, making the system extensible without altering existing classes.
+        </p>
+
+        <h3 class="text-xl font-bold">Step 3: Simplified `Bicycle` Class</h3>
+        <pre class="code-block">
+<span class="keyword">class</span> <span class="class-name">Bicycle</span>
+  <span class="keyword">attr_reader</span> :size, :parts
+
+  <span class="keyword">def</span> <span class="function-name">initialize</span>(size:, parts:)
+    @size = size
+    @parts = parts
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function-name">spares</span>
+    parts.spares
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+        </pre>
+        <p>
+            The `Bicycle` class is now a simple container, delegating all parts-related behaviors to the `Parts` object.
+        </p>
+
+        <h3 class="text-xl font-bold">Final Usage</h3>
+        <pre class="code-block">
+road_bike = <span class="class-name">Bicycle</span>.<span class="function-name">new</span>(size: "M", parts: road_bike_parts)
+mountain_bike = <span class="class-name">Bicycle</span>.<span class="function-name">new</span>(size: "L", parts: mountain_bike_parts)
+
+<span class="keyword">puts</span> road_bike.spares
+<span class="keyword">puts</span> mountain_bike.spares
+        </pre>
+
+        <p>
+            This design minimizes duplication, enhances flexibility, and makes the system easier to understand and extend. All
+            behaviors are encapsulated in the appropriate objects, adhering to SOLID principles.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2 class="text-2xl font-bold">Conclusion</h2>
+        <p>
+            By fully embracing composition, we’ve transformed the Bicycle system into a modular and extensible design. This
+            refactor showcases how shifting from inheritance to composition can align systems with modern software design principles,
+            ensuring scalability and maintainability for the long term.
+        </p>
+        <a href="code-examples.html">Continue to Code Examples →</a>
+    </div>
+</body>
+</html>

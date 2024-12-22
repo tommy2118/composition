@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Problem - Refactoring to Composition Over Inheritance</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #282c34;
+            color: #abb2bf;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 2rem;
+        }
+        .ascii-art {
+            font-size: 0.8rem;
+            color: #56b6c2;
+            text-align: center;
+            margin: 1rem 0;
+        }
+        a {
+            color: #61afef;
+            text-decoration: none;
+        }
+        a:hover {
+            color: #98c379;
+        }
+        .section {
+            margin-bottom: 2rem;
+        }
+        .code-block {
+            background: #1e222a;
+            padding: 1rem;
+            border-radius: 5px;
+            color: #abb2bf;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="section">
+        <h1 class="text-3xl font-bold">Challenges with Inheritance</h1>
+        <p>
+            Inheritance can simplify code by sharing behavior between classes, but it often introduces challenges that
+            make systems harder to understand, extend, and maintain. Let's examine the key issues with inheritance and
+            explore real-world examples.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2 class="text-2xl font-bold">Issue 1: Tight Coupling</h2>
+        <p>
+            Inheritance creates a tight relationship between parent and child classes. Changes to the parent class can
+            ripple through all subclasses, causing unintended side effects.
+        </p>
+        <div class="ascii-art">
+<pre>
+      Tight Coupling Example:
+      ┌───────────┐
+      │ BaseClass │
+      └─────┬─────┘
+            ↓
+      ┌───────────┐
+      │ SubClass  │
+      └───────────┘
+</pre>
+        </div>
+        <p>Example:</p>
+        <pre class="code-block">
+<span class="keyword">class</span> <span class="class-name">User</span>
+  <span class="keyword">def</span> <span class="function-name">initialize</span>(name)
+    @name = name
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function-name">display_name</span>
+    @name.upcase
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">class</span> <span class="class-name">AdminUser</span> < <span class="class-name">User</span>
+  <span class="keyword">def</span> <span class="function-name">display_name</span>
+    <span class="keyword">super</span> + " [ADMIN]"
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+admin = <span class="class-name">AdminUser</span>.<span class="function-name">new</span>("Alice")
+<span class="keyword">puts</span> admin.<span class="function-name">display_name</span>
+# Output: "ALICE [ADMIN]"
+        </pre>
+        <p>
+            If the `User` class changes its `display_name` implementation, all subclasses may break or behave
+            unexpectedly.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2 class="text-2xl font-bold">Issue 2: Rigidity</h2>
+        <p>
+            Inheritance hierarchies often become rigid, making it difficult to add new features without modifying
+            existing classes.
+        </p>
+        <div class="ascii-art">
+<pre>
+        Rigid Hierarchy:
+          ┌─────────────┐
+          │ Animal      │
+          └─────┬───────┘
+                ↓
+          ┌─────────────┐
+          │ Mammal      │
+          └─────┬───────┘
+                ↓
+          ┌─────────────┐
+          │ Human       │
+          └─────────────┘
+</pre>
+        </div>
+        <p>Example:</p>
+        <pre class="code-block">
+<span class="keyword">class</span> <span class="class-name">Animal</span>
+  <span class="keyword">def</span> <span class="function-name">speak</span>
+    "Generic sound"
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">class</span> <span class="class-name">Mammal</span> < <span class="class-name">Animal</span>
+  <span class="keyword">def</span> <span class="function-name">speak</span>
+    "Mammal sound"
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">class</span> <span class="class-name">Human</span> < <span class="class-name">Mammal</span>
+  <span class="keyword">def</span> <span class="function-name">speak</span>
+    "Hello"
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="class-name">Human</span>.<span class="function-name">new</span>.<span class="function-name">speak</span> # Output: "Hello"
+        </pre>
+        <p>
+            Adding a new type of mammal that doesn’t fit this hierarchy (e.g., `Platypus`) may require significant
+            refactoring.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2 class="text-2xl font-bold">Issue 3: Duplicate Logic</h2>
+        <p>
+            Subclasses often end up reimplementing similar logic, defeating the purpose of inheritance.
+        </p>
+        <div class="ascii-art">
+<pre>
+      Duplicate Logic Example:
+          ┌───────────┐
+          │ Employee  │
+          └─────┬─────┘
+                ↓
+        ┌──────────────┐
+        │ Manager      │
+        └──────────────┘
+        ┌──────────────┐
+        │ Developer    │
+        └──────────────┘
+</pre>
+        </div>
+        <p>Example:</p>
+        <pre class="code-block">
+<span class="keyword">class</span> <span class="class-name">Employee</span>
+  <span class="keyword">def</span> <span class="function-name">initialize</span>(name)
+    @name = name
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function-name">bonus</span>
+    1000
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">class</span> <span class="class-name">Manager</span> < <span class="class-name">Employee</span>
+  <span class="keyword">def</span> <span class="function-name">bonus</span>
+    <span class="keyword">super</span> + 2000
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">class</span> <span class="class-name">Developer</span> < <span class="class-name">Employee</span>
+  <span class="keyword">def</span> <span class="function-name">bonus</span>
+    <span class="keyword">super</span> + 1500
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+        </pre>
+        <p>
+            Each subclass implements a custom `bonus` method, duplicating logic instead of sharing it in a common place.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2 class="text-2xl font-bold">Conclusion</h2>
+        <p>
+            Inheritance is a valuable tool, but its limitations make it unsuitable for many situations. By understanding
+            these challenges, we can better appreciate the benefits of composition, which we’ll explore in the next section.
+        </p>
+        <a href="solution.html">Continue to the Solution Section →</a>
+    </div>
+</body>
+</html>
+

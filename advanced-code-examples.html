@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Examples 3-4 - Refactoring to Composition Over Inheritance</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #282c34;
+            color: #abb2bf;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 2rem;
+        }
+        .ascii-art {
+            font-size: 0.8rem;
+            color: #56b6c2;
+            text-align: center;
+            margin: 1rem 0;
+        }
+        a {
+            color: #61afef;
+            text-decoration: none;
+        }
+        a:hover {
+            color: #98c379;
+        }
+        .section {
+            margin-bottom: 2rem;
+        }
+        .code-block {
+            background: #1e222a;
+            padding: 1rem;
+            border-radius: 5px;
+            color: #abb2bf;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="section">
+        <h1 class="text-3xl font-bold">Code Examples 3-4: Advanced Use Cases</h1>
+        <p>
+            In this section, we’ll explore more advanced use cases, demonstrating how composition can simplify complex
+            systems and make them more maintainable.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2 class="text-2xl font-bold">Example 3: Content Management System (CMS)</h2>
+        <p>
+            Content management systems often require rendering different page types, such as blog posts and product pages.
+            Let’s refactor this use case to composition.
+        </p>
+
+        <h3 class="text-xl font-bold">Inheritance-Based Implementation</h3>
+        <pre class="code-block">
+<span class="keyword">class</span> <span class="class-name">Page</span>
+  <span class="keyword">def</span> <span class="function-name">initialize</span>(title, content)
+    @title = title
+    @content = content
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function-name">render</span>
+    "<h1>#{@title}</h1><p>#{@content}</p>"
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">class</span> <span class="class-name">BlogPage</span> < <span class="class-name">Page</span>
+  <span class="keyword">def</span> <span class="function-name">render</span>
+    "<article><h1>#{@title}</h1><p>#{@content}</p></article>"
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">class</span> <span class="class-name">ProductPage</span> < <span class="class-name">Page</span>
+  <span class="keyword">def</span> <span class="function-name">render</span>
+    "<div class='product'><h1>#{@title}</h1><p>#{@content}</p></div>"
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+        </pre>
+
+        <p>
+            Each subclass overrides the `render` method, duplicating logic and creating tight coupling between page types
+            and the parent class.
+        </p>
+
+        <h3 class="text-xl font-bold">Refactored to Composition</h3>
+        <pre class="code-block">
+<span class="keyword">class</span> <span class="class-name">PageRenderer</span>
+  <span class="keyword">def</span> <span class="function-name">initialize</span>(template)
+    @template = template
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function-name">render</span>(title, content)
+    @template.gsub("{title}", title).gsub("{content}", content)
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+blog_template = "<article><h1>{title}</h1><p>{content}</p></article>"
+product_template = "<div class='product'><h1>{title}</h1><p>{content}</p></div>"
+
+blog_renderer = <span class="class-name">PageRenderer</span>.<span class="function-name">new</span>(blog_template)
+product_renderer = <span class="class-name">PageRenderer</span>.<span class="function-name">new</span>(product_template)
+
+<span class="keyword">puts</span> blog_renderer.<span class="function-name">render</span>("My Blog", "Welcome to my blog!")
+# Outputs: <article><h1>My Blog</h1><p>Welcome to my blog!</p></article>
+
+<span class="keyword">puts</span> product_renderer.<span class="function-name">render</span>("Product A", "This is Product A.")
+# Outputs: <div class='product'><h1>Product A</h1><p>This is Product A.</p></div>
+        </pre>
+
+        <p>
+            This approach separates rendering logic from page-specific details, allowing templates to be customized
+            independently of the `PageRenderer` class.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2 class="text-2xl font-bold">Example 4: E-Commerce Discount System</h2>
+        <p>
+            In e-commerce systems, discounts can vary by product, category, or promotion. Let’s refactor an inheritance-based
+            discount system to use composition.
+        </p>
+
+        <h3 class="text-xl font-bold">Inheritance-Based Implementation</h3>
+        <pre class="code-block">
+<span class="keyword">class</span> <span class="class-name">Discount</span>
+  <span class="keyword">def</span> <span class="function-name">apply</span>(price)
+    price
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">class</span> <span class="class-name">PercentageDiscount</span> < <span class="class-name">Discount</span>
+  <span class="keyword">def</span> <span class="function-name">initialize</span>(percent)
+    @percent = percent
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function-name">apply</span>(price)
+    price - (price * @percent / 100.0)
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">class</span> <span class="class-name">FixedAmountDiscount</span> < <span class="class-name">Discount</span>
+  <span class="keyword">def</span> <span class="function-name">initialize</span>(amount)
+    @amount = amount
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function-name">apply</span>(price)
+    price - @amount
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+        </pre>
+
+        <p>
+            Each discount type requires its own subclass, leading to a proliferation of classes as more discount types are added.
+        </p>
+
+        <h3 class="text-xl font-bold">Refactored to Composition</h3>
+        <pre class="code-block">
+<span class="keyword">class</span> <span class="class-name">DiscountStrategy</span>
+  <span class="keyword">def</span> <span class="function-name">initialize</span>(strategy)
+    @strategy = strategy
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function-name">apply</span>(price)
+    @strategy.call(price)
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+percentage_discount = <span class="keyword">lambda</span> { |price| price - (price * 10 / 100.0) }
+fixed_discount = <span class="keyword">lambda</span> { |price| price - 20 }
+
+percentage_strategy = <span class="class-name">DiscountStrategy</span>.<span class="function-name">new</span>(percentage_discount)
+fixed_strategy = <span class="class-name">DiscountStrategy</span>.<span class="function-name">new</span>(fixed_discount)
+
+<span class="keyword">puts</span> percentage_strategy.<span class="function-name">apply</span>(100) # Outputs 90
+<span class="keyword">puts</span> fixed_strategy.<span class="function-name">apply</span>(100) # Outputs 80
+        </pre>
+
+        <p>
+            With this approach, discount logic is decoupled from the main class and can be defined inline or reused across
+            multiple instances.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2 class="text-2xl font-bold">Conclusion</h2>
+        <p>
+            These examples demonstrate how composition can replace rigid inheritance structures, making systems more
+            modular and maintainable. By focusing on reusable components, we can simplify complex systems and adapt them
+            to changing requirements with minimal effort.
+        </p>
+        <a href="conclusion.html">Continue to Conclusion</a>
+    </div>
+</body>
+</html>
+
